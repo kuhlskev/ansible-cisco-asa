@@ -18,13 +18,11 @@ DOCUMENTATION = '''
 ---
 
 module: cisco_asa_write_mem
-author: Patrick Ogenstad (@networklore)
+author: Kevin Kuhls
 version: 1.0
-short_description: Saves the configuration.
+short_description: Runs command on ASA via API.
 description:
-    - Issues the write mem command on the unit
-requirements:
-    - rasa
+    - Issues the cli command on the unit
 options:
     host:
         description:
@@ -37,6 +35,10 @@ options:
     username:
         description:
             - Username for device
+        required: true
+    cli:
+        description:
+            - Command to run on the device
         required: true
     validate_certs:
         description:
@@ -53,6 +55,7 @@ EXAMPLES = '''
     host={{ inventory_hostname }}
     username=api_user
     password=APIpass123
+    cli="mtu outside 1400"
     validate_certs=no
 
 '''
@@ -73,7 +76,7 @@ HEADERS = {
 
 class ASA(object):
 
-    def __init__(self, device=None, username=None, password=None, verify_cert=False, timeout=30):
+    def __init__(self, device=None, username=None, password=None, verify_cert=False, timeout=5):
         
         self.device = device
         self.username = username
@@ -90,11 +93,11 @@ class ASA(object):
             data = requests.post(url, headers=HEADERS, auth=self.cred, verify=self.verify_cert, timeout=self.timeout)            
         return data
 
-    def write_mem(self):
-        """Saves the running configuration to memory
+    def cli(self, cli):
+        """Runs cli command on ASA
         """
-        request = "commands/writemem"
-        return self._post(request)
+        request = "cli"
+        return self._post(request, cli)
 
 
 def main():
@@ -103,21 +106,24 @@ def main():
             host=dict(required=True),
             username=dict(required=True),
             password=dict(required=True),
+            cli=dict(required=True),
             validate_certs=dict(required=False, type="bool", default=False),
         ),
         supports_check_mode=False)
 
     m_args = module.params
-
+    cli=m_args['cli']
     dev = ASA(
         device=m_args['host'],
         username=m_args['username'],
         password=m_args['password'],
         verify_cert=m_args["validate_certs"]
     )
-
+    desired_data = {}
+    desired_data ['commands'] = [cli]
+    #module.fail_json(msg="Module unable to create object - {}: \n".format(desired_data))
     try:
-        data = dev.write_mem()
+        data = dev.cli(desired_data)
     except:
         err = sys.exc_info()[0]
         module.fail_json(msg='Unable to connect to device: %s' % err)
@@ -125,7 +131,7 @@ def main():
     if data.status_code == 200:
         return_status = True
     else:
-        module.fail_json(msg='Unable to save configuration: - %s' % data.status_code)
+        module.fail_json(msg='Unable to change configuration: - %s' % data.status_code)
 
     return_msg = { 'changed': return_status } 
     module.exit_json(**return_msg)
