@@ -5,9 +5,9 @@
   gather_facts: True
 
   tasks:
-  - include_vars: passwords.yml
+  - include_vars: "{{playbook_dir}}/../passwords.yml"
     #when: ansible_user_id != "jenkins" and decrypt_vault == True
-    no_log: True
+    no_log: False
   - name: Create Svc Object Groups
     cisco_asa_service_objectgroup_members:
         host: "{{ inventory_hostname }}"

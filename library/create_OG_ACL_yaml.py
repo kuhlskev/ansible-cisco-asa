@@ -1,3 +1,23 @@
+#!/usr/bin/python
+
+# Copyright 2015 Kevin Kuhls <kekuhls@cisco.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+'''This script can create a YAML file to represent the configuration of an ASA
+The YAML can be consumed by an ansible playbook similar to the example-cisco_asa_infra_as_code.yml 
+'''
+
 import yaml
 import iptools
 from netaddr import IPNetwork, IPAddress
@@ -5,8 +25,12 @@ import socket, struct
 from jinja2 import Environment, FileSystemLoader
 import re
 
+#Please update the following for the desired filenames
+asa_config_file = 'asa-config-file'
+yaml_asa_representation = 'yaml-file-output.yml'
+
 if __name__ == "__main__":
- f = open('asa-config-file', 'r')
+ f = open(asa-config-file, 'r')
  whole_file = f.readlines()
  og_acl_dict = {}
  static_routes = []
@@ -153,7 +177,7 @@ if __name__ == "__main__":
         print(src_dest)
         access_lists.insert(0,acl_entry)
     og_acl_dict.update({'net_object_groups':net_object_groups,'svc_object_groups':svc_object_groups, 'access_lists':access_lists, 'static_routes':static_routes})
- with open('yaml-to-input.yml', 'w') as outfile:
+ with open(yaml_asa_representation, 'w') as outfile:
     outfile.write( yaml.dump(og_acl_dict, default_flow_style=False) )
 
 

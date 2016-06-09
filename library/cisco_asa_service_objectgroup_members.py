@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright 2015 Patrick Ogenstad <patrick@ogenstad.com>
+# Copyright 2015 Kevin Kuhls <kekuhls@cisco.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ options:
         required: false
     entry_state:
         description:
-            - State of the entire object-group
+            - State of the object-group entry
         choices: [ "present", "absent" ]
         required: false
     host:
@@ -639,9 +639,9 @@ def main():
             description=dict(required=False),
             state=dict(required=False, choices=["absent", "present"], default="present"),
             protocol=dict(required=True, choices=["tcp", "udp", "tcp-udp", "icmp"]),  
-            members=dict(required=False, type ="list", default=None),        
+            members=dict(required=False, type ="list", default=[]),       
             validate_certs=dict(required=False, type="bool", default=False),
-            value=dict(required=False)
+            value=dict(required=False, default='Empty')
             ),
         supports_check_mode=False)
 
@@ -667,7 +667,7 @@ def main():
     verify_cert=m_args["validate_certs"]
     #module.fail_json(msg="%s HUH?" % m_args['value'])
     members = []
-    if m_args['members'] == None:
+    if m_args['members'] == []:
         members.append(m_args["value"])
     else:
         x = 0
@@ -705,10 +705,7 @@ def main():
             member_kind = "ICMPService"
         else:
             kind = "object#TcpUdpServiceGroup"
-            member_kind = "objectRef#TcpUdpServiceGroup"
-
-        #module.fail_json(msg="%s this is what we got" % value)
-        
+            member_kind = "objectRef#TcpUdpServiceGroup"        
         kind_type = "value"
         if isinstance(value, str):
             if '--' in value: #if the value is a string representation of a port range

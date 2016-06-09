@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright 2015 Patrick Ogenstad <patrick@ogenstad.com>
+# Copyright 2015 Kevin Kuhls <kekuhls@cisco.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,11 +25,6 @@ description:
     - Configures static routes on ASA via ASA API
 requirements:
 options:
-    category:
-        description:
-            - The type of object you are creating. Use slash notation for networks, i.e. 192.168.0.0/24. Use - for ranges, i.e. 192.168.0.1-192.168.0.10. 
-        choices: [ 'ipv4_address', 'ipv6_address', 'ipv4_subnet', 'ipv6_subnet', 'ipv4_range', 'ipv6_range', 'ipv4_fqdn', 'ipv6_fqdn', 'object', 'object_group' ]
-        required: false
     description:
         description:
             - Description of the object
@@ -38,10 +33,23 @@ options:
         description:
             - State of the entire object-group
         choices: [ 'present', 'absent' ]
+        default 'present'
         required: false
     host:
         description:
             - Typically set to {{ inventory_hostname }}
+        required: true
+    interface:
+        description:
+            - Outbound interface nameif to forward for the specified route
+        required: true
+    next_hop:
+        description:
+            - IP address of the next hop for specified prefix
+        required: true
+    network:
+        description:
+            - Specified prefix for route entry
         required: true
     name:
         description:
@@ -53,7 +61,7 @@ options:
         required: true
     state:
         description:
-            - State of the entire object-group
+            - State of the route entry
         choices: [ 'present', 'absent' ]
         required: true
     username:
@@ -75,26 +83,29 @@ options:
 
 EXAMPLES = '''
 
-# Create a network object for a web server
-- cisco_asa_network_object:
-    host={{ inventory_hostname }}
-    username=api_user
-    password=APIpass123
-    name=tsrv-web-1
-    state=present
-    category=IPv4Address
-    description='Test web server'
-    value='10.12.30.10'
-    validate_certs=no
+# Create a route entry on the ASA
+  - name: Routes
+    cisco_asa_route:
+       host: "{{ inventory_hostname }}"
+       username: apiuser
+       password: apipass
+       next_hop: 172.23.204.1
+       interface: outside
+       network: 3.3.7.0/24  
+       state: present
+       validate_certs: False
 
 # Remove test webserver
-- cisco_asa_network_object:
-    host={{ inventory_hostname }}
-    username=api_user
-    password=APIpass123
-    name=tsrv-web-2
-    state=absent
-    validate_certs=no
+  - name: Routes
+    cisco_asa_route:
+       host: "{{ inventory_hostname }}"
+       username: apiuser
+       password: apipass
+       next_hop: 172.23.204.1
+       interface: outside
+       network: 3.3.7.0/24  
+       state: absent
+       validate_certs: False
 '''
 import json
 

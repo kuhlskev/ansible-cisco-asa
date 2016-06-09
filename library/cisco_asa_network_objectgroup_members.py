@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright 2015 Patrick Ogenstad <patrick@ogenstad.com>
+# Copyright 2015 Kevin Kuhls <kekuhls@cisco.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ DOCUMENTATION = '''
 ---
 
 module: cisco_asa_network_objectgroup
-author: Patrick Ogenstad (@networklore), edits by Kevin Kuhls
+author: Patrick Ogenstad (@networklore) and Kevin Kuhls
 version: 1.0
 short_description: Creates deletes or edits network object-groups.
 description:

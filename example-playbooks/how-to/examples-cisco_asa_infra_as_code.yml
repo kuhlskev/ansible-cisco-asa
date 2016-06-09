@@ -1,3 +1,6 @@
+#In this playbook the individual modules are looped via with_items to perform multiple tasks
+#The input yaml file provides a model of the configuration of the ASA
+
 ---
 - name: ASA Configuration
   hosts: asa
@@ -5,9 +8,9 @@
   gather_facts: True
 
   tasks:
-  - include_vars: passwords.yml
+  - include_vars: "{{playbook_dir}}/../../passwords.yml"
     no_log: True
-  - include_vars: "input.yml"
+  - include_vars: YAML_file_describing_ASA.yml
 
   - debug: var=inventory_hostname
 
@@ -51,19 +54,18 @@
        state: "{{item['state'] | default('present')}}"
        validate_certs: False
     with_items: "{{ access_lists }}"
-
-# commented out as test ASAv is missing interfaces           
-#  - name: Routes
-#    cisco_asa_route:
-#       host: "{{ inventory_hostname }}"
-#       username: "{{username}}"
-#       password: "{{password}}"
-#       next_hop: "{{item['next_hop']}}"
-#       interface: "{{item['interface']}}"
-#       network: "{{item['network']}}"  
-#       state: present
-#       validate_certs: False
-#    with_items: "{{static_routes}}"
+           
+  - name: Routes
+    cisco_asa_route:
+       host: "{{ inventory_hostname }}"
+       username: "{{username}}"
+       password: "{{password}}"
+       next_hop: "{{item['next_hop']}}"
+       interface: "{{item['interface']}}"
+       network: "{{item['network']}}"  
+       state: present
+       validate_certs: False
+    with_items: "{{static_routes}}"
 
   - name: CLI Command
     cisco_asa_cli:
