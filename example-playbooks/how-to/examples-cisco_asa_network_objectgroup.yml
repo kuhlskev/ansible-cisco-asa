@@ -11,67 +11,67 @@
        #when: ansible_user_id != "jenkins" and decrypt_vault == True
        no_log: True
 
-#     - name: Create New Net Object Group
-#       cisco_asa_network_objectgroup_members:
-#           host: "{{ inventory_hostname }}"
-#           username: "{{username}}"
-#           password: "{{password}}"
-#           name: kev
-#           state: present
-#           #description:
-#           value: '172.16.32.56'  #if no mask, /32 is assumed
-#           validate_certs: False
-#
-#     - name: Create New Net Object Group
-#       cisco_asa_network_objectgroup_members:
-#           host: "{{ inventory_hostname }}"
-#           username: "{{username}}"
-#           password: "{{password}}"
-#           name: kev
-#           state: present
-#           #description:
-#           members: 
-#              - 192.168.124.172/31
-#              - 192.168.193.231/32
-#           validate_certs: False
-#
-#     - name: Add Entry to Net Object Group
-#       cisco_asa_network_objectgroup_members:
-#           host: "{{ inventory_hostname }}"
-#           username: "{{username}}"
-#           password: "{{password}}"
-#           name: kev
-#           state: present
-#           #description:
-#           members: 
-#              - 10.10.10.10/31
-#           validate_certs: False
-#
-#     - name: Remove Entry from Net Object Group
-#       cisco_asa_network_objectgroup_members:
-#           host: "{{ inventory_hostname }}"
-#           username: "{{username}}"
-#           password: "{{password}}"
-#           name: kev
-#           state: present
-#           entry_state: absent
-#           #description:
-#           value: '172.16.32.56'
-#           validate_certs: False           
-#
-#     - name: Remove list of Entries from Net Object Group
-#       cisco_asa_network_objectgroup_members:
-#           host: "{{ inventory_hostname }}"
-#           username: "{{username}}"
-#           password: "{{password}}"
-#           name: kev
-#           state: present
-#           entry_state: absent
-#           #description:
-#           members: 
-#              - 192.168.124.172/31
-#              - 10.10.10.10/31
-#           validate_certs: False     
+     - name: Create New Net Object Group
+       cisco_asa_network_objectgroup_members:
+           host: "{{ inventory_hostname }}"
+           username: "{{username}}"
+           password: "{{password}}"
+           name: kev
+           state: present
+           #description:
+           value: '172.16.32.56'  #if no mask, /32 is assumed
+           validate_certs: False
+
+     - name: Create New Net Object Group
+       cisco_asa_network_objectgroup_members:
+           host: "{{ inventory_hostname }}"
+           username: "{{username}}"
+           password: "{{password}}"
+           name: kev
+           state: present
+           #description:
+           members: 
+              - 192.168.124.172/31
+              - 192.168.193.231/32
+           validate_certs: False
+
+     - name: Add Entry to Net Object Group
+       cisco_asa_network_objectgroup_members:
+           host: "{{ inventory_hostname }}"
+           username: "{{username}}"
+           password: "{{password}}"
+           name: kev
+           state: present
+           #description:
+           members: 
+              - 10.10.10.10/31
+           validate_certs: False
+
+     - name: Remove Entry from Net Object Group
+       cisco_asa_network_objectgroup_members:
+           host: "{{ inventory_hostname }}"
+           username: "{{username}}"
+           password: "{{password}}"
+           name: kev
+           state: present
+           entry_state: absent
+           #description:
+           value: '172.16.32.56'
+           validate_certs: False           
+
+     - name: Remove list of Entries from Net Object Group
+       cisco_asa_network_objectgroup_members:
+           host: "{{ inventory_hostname }}"
+           username: "{{username}}"
+           password: "{{password}}"
+           name: kev
+           state: present
+           entry_state: absent
+           #description:
+           members: 
+              - 192.168.124.172/31
+              - 10.10.10.10/31
+           validate_certs: False     
 
      - name: Remove Net Object Group
        cisco_asa_network_objectgroup_members:
