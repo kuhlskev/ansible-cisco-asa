@@ -36,11 +36,11 @@ If you have any questions or feedback. Please send me a note at kekuhls@cisco.co
 ## How to run
 
 You can edit a playbook and run all within the playbook (sample: sample_playbook.yml)
-	ansible-playbook sample_playbook.yml -i inventory
+	ansible-playbook example-playbooks/how-to/sample_playbook.yml -i inventory -M library
 
 or you can edit/create a yaml to consume into the playbook (sample: run asa-api.yml with input.yml)
-	ansible-playbook asa-api.yml -i inventory
+	ansible-playbook example-playbooks/how-to/examples-cisco_asa_infra_as_code.yml -i hosts -M library
 
 ## Taking advantage of converting a current ASA config into yaml to be consumed by asa-api.yml
-edit the library/create_OG_ACL_yaml.py with the asa config file to convert to yaml and the name of the output file and run the script
+use the library/create_OG_ACL_yaml.py with the asa config file to convert to yaml and the name of the output file and run the script
 

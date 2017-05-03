@@ -113,13 +113,11 @@ EXAMPLES = '''
 '''
 
 #import base64
-import json
+import json, ast, string, requests
 #import sys
 #import urllib2
 #import ssl
-import string
 from ansible.module_utils.basic import *
-import requests
 from requests.auth import HTTPBasicAuth
 
 HEADERS = {
@@ -351,7 +349,7 @@ def main():
             destination_service=dict(required=False, default=None),
             destination_address=dict(required=False, default='any4'),
             entry=dict(required=False, default=None),
-            position=dict(required=False, default=1, type='int'),
+            position=dict(required=False, default=1, type='str'),
             state=dict(required=True, choices=['absent', 'present']),
             validate_certs=dict(required=False, type='bool', default=False)),
         supports_check_mode=False)
@@ -366,6 +364,13 @@ def main():
     destination_address=m_args['destination_address']
     state = m_args['state']
     position=m_args['position']
+    if isinstance(position, str):
+        #module.fail_json(msg='hiyo %s %s' % (type(position), position))
+        if position.lower() != 'last': 
+            try: 
+                position = int(position)
+            except:
+                pass
     dev = ASA(
         device=m_args['host'],
         username=m_args['username'],
@@ -373,8 +378,9 @@ def main():
         verify_cert=m_args['validate_certs']
     )
     if m_args['entry']:  #need to do as try since some values may not be present
+        entry = ast.literal_eval(m_args['entry'])  #had to do this for some reason in ansible 2.x as dict was read as string
         try:
-            source_service=m_args['entry']['source_service']
+            source_service=entry['source_service']
             if source_service in tcp_services.values():   #if well-known port name, convert to applicable int
                 source_service = int(tcp_services.keys()[tcp_services.values().index(source_service)])
             elif source_service in udp_services.values():   #if well-known port name, convert to applicable int
@@ -386,11 +392,11 @@ def main():
         except:
             pass
         try:
-            source_address=m_args['entry']['source_address']
+            source_address=entry['source_address']
         except:
             pass
         try:
-            destination_service=m_args['entry']['destination_service']
+            destination_service=entry['destination_service']
             if destination_service in tcp_services.values():  #if well-known port name, convert to applicable int
                 destination_service = int(tcp_services.keys()[tcp_services.values().index(destination_service)])
             elif destination_service in udp_services.values():  #if well-known port name, convert to applicable int
@@ -402,9 +408,11 @@ def main():
         except:
             pass
         try:    
-            destination_address=m_args['entry']['destination_address']
+            destination_address=entry['destination_address']
         except:
-            pass
+            module.fail_json(msg='hiyo %s %s' % (entry, type(entry)))
+            #pass
+
     source_address_object = 'value'
     destination_address_object = 'value'
     source_service_object = 'value'
@@ -565,6 +573,9 @@ def main():
             destination_service_object: destination_service_value
         },
     }
+    if isinstance(position, str):
+        if position.lower() == 'last':
+            desired_data.pop("position")
     changed = False
     #new rasa style
     try:
@@ -573,7 +584,6 @@ def main():
         err = sys.exc_info()[0]
         module.fail_json(msg='Unable to connect to device: %s' % err)
     #module.fail_json(msg='yo %s' % json.dumps(data.json(), sort_keys=True,indent=4, separators=(',', ': ')))
-    #module.fail_json(msg="test %s" % json.dumps(desired_data, sort_keys=True,indent=4, separators=(',', ': ')))
     if data.status_code == 200:
         found = find_member(data.json(), desired_data, module)
         #module.fail_json(msg="test %s %s %s" % (found, json.dumps(desired_data, sort_keys=True,indent=4, separators=(',', ': ')), json.dumps(data.json(), sort_keys=True,indent=4, separators=(',', ': '))))
